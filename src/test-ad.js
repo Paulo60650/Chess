@@ -1,0 +1,35 @@
+const fs = require("fs");
+const { JSDOM, VirtualConsole } = require("jsdom");
+const errors = []; const vc = new VirtualConsole(); vc.on("jsdomError", (e) => errors.push(e.detail || e.message));
+const dom = new JSDOM(fs.readFileSync(__dirname + "/test.html", "utf8"), { runScripts: "dangerously", url: "https://example.org/", pretendToBeVisual: true, virtualConsole: vc });
+const w = dom.window, d = w.document; w.scrollTo = () => {};
+let fails = 0; const ok = (c, m) => { if (!c) { fails++; console.log("ÉCHEC :", m); } else console.log("ok :", m); };
+const ev = (s) => w.eval(s); const click = (s) => { const e = d.querySelector(s); if (!e) { fails++; console.log("ÉCHEC : introuvable", s); return false; } e.click(); return true; };
+ev(`V.stack=[];go("strat");render()`);
+ok(!!d.querySelector('[data-act="adopen"][data-id="att"]') && !!d.querySelector('[data-act="adopen"][data-id="def"]'), "entrées Attaquer et Défendre dans la carte Apprendre");
+const cardHtml = d.getElementById("main").innerHTML;
+ok(cardHtml.indexOf('data-id="att"') < cardHtml.indexOf('data-id="def"') && !/data-act="edadd"/.test(cardHtml), "Attaquer puis Défendre dans la page Stratégie");
+ok(ev("ADC.filter(c=>c.grp==='att').length") === 13 && ev("ADC.filter(c=>c.grp==='def').length") === 11, "13 concepts d'attaque, 11 de défense");
+ok(ev("ADC.some(c=>c.id==='a-grec')"), "sacrifice grec présent");
+click('[data-act="adopen"][data-id="att"]');
+ok(d.querySelectorAll('#main [data-act="stc"]').length === 13, "liste attaque : 13 concepts");
+click('[data-act="adopen"][data-id="def"]'); ok(d.querySelectorAll('#main [data-act="stc"]').length === 11, "liste défense : 11 concepts");
+click('[data-act="adopen"][data-id="att"]');
+click('[data-act="stc"][data-id="a-grec"]');
+ok(/sacrifice grec/i.test(d.querySelector("#main").textContent) && d.querySelectorAll('[data-act="stex"]').length === 2, "page du sacrifice grec avec 2 exemples");
+ok(d.querySelectorAll('#main [data-act="pzopen"]').length === 12, "12 exercices sur la page");
+click('[data-act="stgo"][data-i="3"]'); click('[data-act="stex"][data-i="1"]'); click('[data-act="stgo"][data-i="11"]');
+ok(!/undefined|NaN/.test(d.querySelector("#main").textContent), "exemple 2 sans valeur indéfinie");
+click('[data-act="stseen"][data-id="a-grec"]'); ok(ev("stSeen('a-grec')"), "concept marqué vu");
+click('[data-act="back"]'); ok(ev("V.view") === "ad", "retour à la liste Attaquer");
+// tous les concepts s'ouvrent, tous les exercices sont jouables
+let bad = 0;
+ev("ADC.map(c=>c.id)").forEach((id) => { ev(`V.stack=[];V.view="ad";V.adg="att";stConceptOpen("${id}")`); if (/undefined|NaN/.test(d.querySelector("#main").textContent)) bad++; });
+ok(bad === 0, "23 pages de concept propres");
+const pz = ev("allPz().filter(p=>p.cpt).length"); ok(pz === 317, "317 exercices intégrés aux Tactiques (" + pz + ")");
+ev(`V.stack=[];V.view="ad";puzOpen(allPz().filter(p=>p.cpt==="a-grec")[0].id)`);
+ok(ev("V.view") === "puzzle" && d.querySelectorAll("#board [data-sq]").length === 64, "un exercice s'ouvre sur le plateau");
+// plan : concepts non vus pris en compte
+ev(`S.plan=null;S.mind=null;S.stv={};S.eg={};planBuild("strat")`); ok(true, "plan stratégie construit");
+ok(errors.length === 0, "aucune erreur JS " + errors.slice(0, 2).join("|"));
+console.log(fails ? "ÉCHECS " + fails : "TOUT PASSE"); process.exit(fails ? 1 : 0);
