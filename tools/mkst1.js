@@ -1,5 +1,5 @@
-const {pos,game,FR,evTxt,done}=require("../att/mk.js");const G=require("./games1.js");const fs=require("fs");
-const OUT="/tmp/claude-0/-home-claude/8be9f305-ba97-50e3-b2aa-fa88d7f43ef0/scratchpad/build/";
+const {pos,game,FR,evTxt,done}=require(process.env.ST_MK||"../att/mk.js");const G=require("./games1.js");const fs=require("fs");
+const OUT=process.env.ST_OUT||"./build/";
 const L=[];const EX=[];// exercises: {cpt,k,ply,th,pos,lv,txt}
 (async()=>{
 // 1 -- paire de fous

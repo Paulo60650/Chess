@@ -1,4 +1,4 @@
-const {game,done}=require("../att/mk.js");const G=require("./games1.js");const fs=require("fs");
+const {game,done}=require(process.env.ST_MK||"../att/mk.js");const G=require("./games1.js");const fs=require("fs");
 (async()=>{const J=JSON.parse(fs.readFileSync("st1.json"));
 if(J.L.some(l=>l.id==="weakking")){console.log("déjà");process.exit()}
 const a={id:"weakking",t:"Le roque affaibli",lv:3,

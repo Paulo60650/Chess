@@ -1,5 +1,5 @@
 const {Chess}=require("chess.js");const {spawn}=require("child_process");
-const sf=spawn("/usr/games/stockfish");let buf="",resolve;
+const sf=spawn(process.env.STOCKFISH||"stockfish");let buf="",resolve;
 sf.stdout.on("data",x=>{buf+=x;let i;while((i=buf.indexOf("\n"))>=0){const l=buf.slice(0,i);buf=buf.slice(i+1);if(resolve&&resolve(l))resolve=null}});
 const send=s=>sf.stdin.write(s+"\n");
 send("uci");send("setoption name Threads value 2");send("setoption name Hash value 256");

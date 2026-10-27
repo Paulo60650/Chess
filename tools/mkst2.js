@@ -1,6 +1,6 @@
 const {an,done,Chess}=require("./sf.js");const G=require("./games1.js");const fs=require("fs");
 const FR=m=>m.replace(/\b([NBRQK])(?=[a-h1-8x])/g,x=>({N:"C",B:"F",R:"T",Q:"D",K:"R"})[x]).replace(/=([NBRQ])/g,(a,x)=>"="+({N:"C",B:"F",R:"T",Q:"D"})[x]);
-const B="/tmp/claude-0/-home-claude/8be9f305-ba97-50e3-b2aa-fa88d7f43ef0/scratchpad/build/";
+const B=process.env.ST_OUT||"./build/";
 (async()=>{const {L,EX}=JSON.parse(fs.readFileSync("st1.json"));const P=[];const lvOf=c=>c.lv;
  for(const e of EX){const sp=G[e.k].split(" ");const g=new Chess();for(let i=0;i<e.ply-1;i++)g.move(sp[i],{sloppy:true});const fen=g.fen();
   const a=await an(fen,18,2);const m=g.move(sp[e.ply-1],{sloppy:true});const me=fen.split(" ")[1]==="w"?"Les Blancs":"Les Noirs";

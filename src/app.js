@@ -61,8 +61,12 @@ async function initRemote() {
     remote = { doc, busy: false, dirty: false };
     if (snap.exists) {
       const d = snap.data();
-      if (d && (d.updated || 0) > (S.updated || 0)) { adopt(clone(d)); localSave(); ensureSession(); }
-      else if (d && (d.updated || 0) < (S.updated || 0)) scheduleRemote();
+      /* Fusion des deux états (et non « le plus récent écrase l'autre ») : deux appareils utilisés hors ligne ne perdent plus leur travail */
+      if (d && (d.updated || 0) !== (S.updated || 0)) {
+        const rd = clone(d), remoteNewer = (rd.updated || 0) > (S.updated || 0);
+        adopt(remoteNewer ? mergeState(rd, clone(S)) : mergeState(clone(S), rd));
+        localSave(); ensureSession(); scheduleRemote();
+      }
     } else if (S.updated > 0) scheduleRemote();
     render();
   } catch (e) { remote = null; }
@@ -158,7 +162,10 @@ function applyResult(id, errors, fromSession) {
   if (errors === 0) l.box = Math.min(6, (l.box || 0) + 1);
   else if (errors <= 2) l.box = Math.max(1, l.box || 0);
   else l.box = Math.max(1, (l.box || 0) - 2);
-  l.due = addDays(t, INTERVALS[l.box]);
+  /* Facteur de facilité propre à chaque ligne : les lignes toujours réussies s'espacent plus vite, les fragiles reviennent plus tôt */
+  const ease = Math.max(0.7, Math.min(1.6, (l.ease || 1) + (errors === 0 ? 0.06 : -0.12 * Math.min(errors, 3))));
+  l.ease = Math.round(ease * 100) / 100;
+  l.due = addDays(t, l.box <= 1 ? INTERVALS[l.box] : Math.max(INTERVALS[l.box - 1] + 1, Math.round(INTERVALS[l.box] * ease)));
   S.days[t] = (S.days[t] || 0) + 1;
   if (fromSession) markSessionDone(id);
   save();
@@ -577,6 +584,7 @@ function homeHTML() {
   h += trowHTML(OP_BY_ID[STRUCTS[sid].op].g, OP_BY_ID[STRUCTS[sid].op].k, "Fiche du jour", STRUCTS[sid].title, "", 'data-act="struct" data-id="' + sid + '"');
   h += trowHTML("☀", "amber", "Défi du jour", dg.done.length + " sur " + dg.ids.length + " problèmes", dg.done.length + "/" + dg.ids.length, 'data-act="daily"');
   h += "</ul></section>\n\n";
+  h += bkNudgeHTML();
   h += actCardHTML();
   h += homeRest(t, sid);
   return h;
@@ -918,6 +926,7 @@ function progHTML() {
   h += '<section class="card"><span class="label">Lignes les plus fragiles</span>';
   h += weak.length ? '<ul class="stack">' + weak.map((x) => '<li class="row between"><span>' + esc(x.L.name) + '<br><span class="small muted">' + esc(OP_BY_ID[x.L.op].short) + '</span></span><span class="chip bad">' + x.r.toFixed(1) + ' erreur par essai</span><button class="btn small" data-act="drill" data-id="' + x.L.id + '">Rejouer</button></li>').join("") + "</ul>" : '<p class="muted">Aucune ligne fragile pour l\'instant. Fais une séance pour que cette liste se remplisse.</p>';
   h += "</section>";
+  h += bkCardHTML();
   h += '<section class="card flat"><span class="label">Données</span>' + (V.confirmReset ? '<p>Effacer toute la progression de cet appareil et de ton compte ?</p><div class="row"><button class="btn" data-act="reset2" style="border-color:var(--bad);color:var(--bad)">Oui, tout effacer</button><button class="btn" data-act="reset0">Annuler</button></div>' : '<button class="btn small" data-act="reset1" style="align-self:flex-start">Effacer ma progression</button>') + "</section>";
   return h;
 }
@@ -931,6 +940,7 @@ document.addEventListener("click", (e) => {
   const d = a.dataset;
   if (d.act.slice(0, 2) === "m_") return mindAct(d);
   if (d.act.slice(0, 2) === "w_") return planAct(d);
+  if (d.act.slice(0, 3) === "bk_") return bkAct(d);
   switch (d.act) {
     case "tab": if (d.v === "plans" || d.v === "concepts") go(d.v); else setTab(d.v); break;
     case "back": goBack(); break;
@@ -1077,7 +1087,7 @@ document.addEventListener("click", (e) => {
     }
     case "reset1": V.confirmReset = true; renderMain(); break;
     case "reset0": V.confirmReset = false; renderMain(); break;
-    case "reset2": { const u = S.user; adopt(defaults()); S.user = u; S.updated = Date.now(); localSave(); scheduleRemote(); V.confirmReset = false; ensureSession(); renderMain(); break; }
+    case "reset2": { const u = S.user; adopt(defaults()); S.user = u; S.updated = Date.now(); S.resetAt = S.updated; localSave(); scheduleRemote(); V.confirmReset = false; ensureSession(); renderMain(); break; }
   }
 });
 document.addEventListener("input", (e) => {

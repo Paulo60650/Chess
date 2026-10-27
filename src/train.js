@@ -228,7 +228,7 @@ function egEnd(ok, reason) {
   sfx(ok ? "done" : "bad"); save(); renderMain();
 }
 function egCheck() {
-  const g = VS.g, x = EG_LIST[VS.eg], mine = Math.floor(g.history().length / 2) + (VS.me === "w" ? 0 : 0);
+  const g = VS.g, x = EG_LIST[VS.eg];
   if (g.in_checkmate()) { if (g.turn() === VS.me) egEnd(false, "Tu es mat"); else egEnd(x.goal === "win", x.goal === "win" ? "Échec et mat !" : "Mat, mais le but était la nulle"); return true; }
   if (g.in_draw() || g.in_stalemate()) { egEnd(x.goal === "draw", x.goal === "draw" ? "Nulle obtenue" : (g.in_stalemate() ? "Pat : tu as laissé filer la victoire" : "Nulle : la victoire t'a échappé")); return true; }
   const myMoves = g.history().length / 2;

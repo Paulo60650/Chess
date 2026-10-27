@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  rapide:
+    name: Tests rapides + build à jour
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Installer les dépendances
+        working-directory: src
+        run: npm install --no-audit --no-fund
+      - name: Tests sans navigateur (fusion, import, répétition espacée)
+        working-directory: src
+        run: node test-backup.js
+      - name: Tests de données
+        working-directory: src
+        env:
+          NODE_PATH: ${{ github.workspace }}/src/node_modules
+        run: |
+          node build.js --no-index
+          node test-data.js > /dev/null
+          for t in test-ad test-st test-egex test-eglsec test-li test-master test-surprise test-xp test-act test-pun test-mind; do
+            echo "== $t"; timeout 600 node $t.js
+          done
+      - name: Vérifier que index.html et sw.js sont à jour
+        working-directory: src
+        run: |
+          node build.js
+          git diff --exit-code -- ../index.html ../sw.js || { echo "::error::index.html ou sw.js ne correspond pas aux sources : lance « cd src && node build.js » puis commit."; exit 1; }
+
+  longs:
+    name: Tests longs (interface et navigation)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Installer et construire
+        working-directory: src
+        run: |
+          npm install --no-audit --no-fund
+          node build.js --no-index
+      - name: test-ui, test-nav, test-nav2
+        working-directory: src
+        env:
+          NODE_PATH: ${{ github.workspace }}/src/node_modules
+        run: |
+          for t in test-ui test-nav test-nav2; do
+            echo "== $t"; timeout 1500 node $t.js
+          done
