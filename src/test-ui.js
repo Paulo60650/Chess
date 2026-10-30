@@ -297,7 +297,7 @@ const ev = (s) => w.eval(s);
   ev("V.trk='tact';V.stack=[];V.view='puz';render()");
   ev("V.stack=[];V.view='strat';V.tab='strat';render()");
   ok(d.querySelectorAll("#main .trow").length === 6 && d.querySelector('.tab[aria-current="page"]').textContent.indexOf("Stratégie") >= 0, "onglet Stratégie : 6 entrées regroupées");
-  click('[data-act="tab"][data-v="concepts"]'); ok(ev("V.view") === "concepts" && d.querySelectorAll('[data-act="stc"]').length === 17, "concepts : 17 concepts");
+  click('[data-act="tab"][data-v="concepts"]'); ok(ev("V.view") === "concepts" && d.querySelectorAll('[data-act="stc"]').length === 20, "concepts : 20 concepts");
   click('[data-act="stc"][data-id="exchange"]'); ok(ev("V.view") === "stratc" && d.querySelectorAll(".board").length === 1 && d.querySelectorAll('[data-act="stex"]').length === 2, "concept avec 2 exemples");
   click('[data-act="stgo"][data-i="1"]'); ok(ev("V.si") === 1 && /sacrifice de qualité/i.test(d.body.textContent), "pas dans la ligne");
   click('[data-act="stex"][data-i="1"]'); ok(ev("V.ii") === 1, "second exemple");

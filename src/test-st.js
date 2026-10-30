@@ -6,7 +6,7 @@ const w = dom.window, d = w.document; w.scrollTo = () => {};
 let fails = 0; const ok = (c, m) => { if (!c) { fails++; console.log("ÉCHEC :", m); } else console.log("ok :", m); };
 const ev = (s) => w.eval(s);
 ev(`V.stack=[];go("home");render()`);
-const ids = ["bpair", "bpbreak", "iqp", "minor", "hang", "zugzwang", "pillsbury", "openfile", "weakking", "prophyl"];
+const ids = ["bpair", "bpbreak", "iqp", "minor", "hang", "zugzwang", "pillsbury", "openfile", "weakking", "prophyl", "bvn", "enfermement", "exsac"];
 let bad = 0;
 ids.forEach((id) => {
   ev(`V.stack=[];V.view="concepts";stConceptOpen("${id}")`);

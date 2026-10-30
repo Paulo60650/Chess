@@ -26,7 +26,7 @@ click('[data-act="back"]'); ok(ev("V.view") === "ad", "retour à la liste Attaqu
 let bad = 0;
 ev("ADC.map(c=>c.id)").forEach((id) => { ev(`V.stack=[];V.view="ad";V.adg="att";stConceptOpen("${id}")`); if (/undefined|NaN/.test(d.querySelector("#main").textContent)) bad++; });
 ok(bad === 0, "23 pages de concept propres");
-const pz = ev("allPz().filter(p=>p.cpt).length"); ok(pz === 317, "317 exercices intégrés aux Tactiques (" + pz + ")");
+const pz = ev("allPz().filter(p=>p.cpt).length"); ok(pz === 331, "331 exercices intégrés aux Tactiques (" + pz + ")");
 ev(`V.stack=[];V.view="ad";puzOpen(allPz().filter(p=>p.cpt==="a-grec")[0].id)`);
 ok(ev("V.view") === "puzzle" && d.querySelectorAll("#board [data-sq]").length === 64, "un exercice s'ouvre sur le plateau");
 // plan : concepts non vus pris en compte
