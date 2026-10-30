@@ -118,12 +118,12 @@ const ev = (s) => w.eval(s);
   click('[data-act="chtoggle"][data-id="dut-pieges"]');
   ok(d.querySelectorAll('[data-act="learn"]').length === 6, "ouverture d'un chapitre au toucher");
   click('[data-act="jump"][data-id="dut-class"]');
-  ok(d.querySelectorAll('[data-act="learn"]').length === 12, "pastille de chapitre l'ouvre");
+  ok(d.querySelectorAll('[data-act="learn"]').length === 13, "pastille de chapitre l'ouvre");
   ["dut-stone","dut-lond","dut-gamb","dut-dev"].forEach((x) => click('[data-act="chtoggle"][data-id="' + x + '"]'));
-  ok(d.querySelectorAll(".chap").length === 10, "10 chapitres hollandais (dont Mes lignes et Lignes de tes cours)");
+  ok(d.querySelectorAll(".chap").length === 9, "9 chapitres hollandais (dont Mes lignes)");
   ok(d.querySelectorAll('.chap[data-k="red"] .chip.bad, .chap[data-k="red"] .chip.good').length >= 2, "chapitre Pièges avec types");
-  ok(d.querySelectorAll('[data-act="learn"]').length === 27, "27 lignes hollandaises une fois tout ouvert");
-  ok(d.querySelectorAll('[data-act="jump"]').length === 10, "navigation par chapitres");
+  ok(d.querySelectorAll('[data-act="learn"]').length === 32, "32 lignes hollandaises une fois tout ouvert");
+  ok(d.querySelectorAll('[data-act="jump"]').length === 9, "navigation par chapitres");
   // Éditeur de lignes personnelles
   click('[data-act="edadd"]');
   ok(ev("V.view") === "edit" && ev("E.op") === "dut", "éditeur ouvert pour la hollandaise");
