@@ -985,6 +985,7 @@ document.addEventListener("click", (e) => {
     case "pznext2": { const n = pzFollow(P); if (n) { const o = { mode: P.mode, theme: P.theme, sid: P.sid, mt: P.mt }; V.stack.pop(); puzOpen(n, o); } break; }
     case "sldot": sliderGo(d.id, Number(d.i)); break;
     case "pzadapt": adaptStart(d.th || null); break;
+    case "pzdue": { const l = pzDueList(); if (l.length) puzOpen(l[0].id, { mode: "adapt", theme: null }); break; }
     case "rush": rushStart(); break;
     case "wpopen": wpOpen(); break;
     case "wpset": wpSetOpen(d.id); break;

@@ -12,7 +12,7 @@ Appli web en un seul fichier HTML (6 ouvertures + plans de milieu de jeu, tactiq
 - Mise à jour : `cd src && npm i && node build.js`, lancer les tests, commiter `index.html` et `sw.js` avec les sources (la CI vérifie qu'ils sont à jour).
 
 ## Tests (jsdom, depuis `src/`, `NODE_PATH=$PWD/node_modules`)
-test-backup (sans navigateur, rapide), test-ui (long), test-data, test-ad, test-st, test-egex, test-eglsec, test-li, test-master, test-mind, test-surprise, test-xp, test-act, test-pun, test-nav, test-nav2 (longs, lancer en arrière-plan). Vérifier la syntaxe des `<script>` de test.html avec `node --check`.
+test-backup (sans navigateur, rapide), test-ui (long), test-data, test-ad, test-st, test-egex, test-eglsec, test-li, test-master, test-mind, test-surprise, test-xp, test-act, test-pun, test-srs, test-nav, test-nav2 (longs, lancer en arrière-plan). Vérifier la syntaxe des `<script>` de test.html avec `node --check`.
 
 ## Règles de contenu
 - Tout en français. Notation SAN française (C, F, T, D, R) dans les textes.
@@ -30,6 +30,5 @@ test-backup (sans navigateur, rapide), test-ui (long), test-data, test-ad, test-
 - Dépendances : chess.js 0.10.3 (ancienne API), jsdom.
 
 ## TODO (plus tard)
-- Concepts de stratégie sans partie source : bon fou contre mauvais cavalier, enfermement de pièce, sacrifice positionnel. Trouver une vraie partie de maître pour chacun (chessgames), notes vérifiées Stockfish, 2–5 exercices, puis ajouter via tools/mkst4.js (modèle) et rebuild.
-- Rafraîchir les statistiques Lichess des lignes (choix en attente : régénérer les commentaires ou seulement les cartes d'info).
-- Option : remplacer l'exemple Lichess de « d-rendre » par une partie célèbre.
+- Rafraîchir les statistiques Lichess des lignes : bloqué, l'explorateur (explorer.lichess.ovh) répond 401 sans jeton. Il faut un jeton Lichess sans aucune portée, lu dans une variable d'environnement (jamais dans le dépôt). Choix en attente : régénérer les commentaires ou seulement les cartes d'info.
+- Finales de tours encore absentes : Philidor avancé, tour contre deux pions, 3 contre 2 du même côté, Kasparian.

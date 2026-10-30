@@ -1,4 +1,5 @@
 /* ===== Tactiques liées à tes ouvertures ===== */
+function pzDueList() { const t = todayStr(); return allPz().filter((p) => { const r = S.pz && S.pz[p.id]; return r && r.due && r.due <= t; }); }
 function pzDone(id) { const r = S.pz && S.pz[id]; return !!(r && r.ok); }
 const PZ_THEMES = [
   ["Mat", "red", "Mater le roi : en 1, 2 ou 3 coups."],
@@ -188,6 +189,9 @@ function puzFinish(shown) {
   if (P.mode === "daily" && !shown) dailyMark(P.id);
   if (P.mode === "wp") wpRecord(P, shown);
   if (!shown) r.ok = 1;
+  /* révision espacée : un problème raté revient le lendemain, puis 3, 7, 16 et 35 jours après */
+  if (shown || P.errs) { r.box = 0; r.due = addDays(todayStr(), 1); }
+  else if (r.due) { r.box = (r.box || 0) + 1; const iv = [1, 3, 7, 16, 35]; if (r.box >= iv.length) { delete r.due; delete r.box; } else r.due = addDays(todayStr(), iv[r.box]); }
   logDay((l) => { l.p++; l.pe += P.errs + (shown ? 1 : 0); const th = P.pz.th; l.t[th] = (l.t[th] || 0) + P.errs + (shown ? 1 : 0); });
   sfx(shown || P.errs ? "ok" : "done");
   save(); renderMain();

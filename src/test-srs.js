@@ -1,0 +1,25 @@
+const fs = require("fs");
+const { JSDOM, VirtualConsole } = require("jsdom");
+const errors = []; const vc = new VirtualConsole(); vc.on("jsdomError", (e) => errors.push(e.detail || e.message));
+const dom = new JSDOM(fs.readFileSync(__dirname + "/test.html", "utf8"), { runScripts: "dangerously", url: "https://example.org/", pretendToBeVisual: true, virtualConsole: vc });
+const w = dom.window, d = w.document; w.scrollTo = () => {};
+let fails = 0; const ok = (c, m) => { if (!c) { fails++; console.log("ÉCHEC :", m); } else console.log("ok :", m); };
+const ev = (s) => w.eval(s);
+const id = ev("allPz().find(p=>!p.pos).id");
+ev(`V.stack=[];setTab('puz');P=null;puzOpen("${id}")`);
+ev("puzShow()");
+ok(ev(`S.pz["${id}"].due`) === ev("addDays(todayStr(),1)") && ev(`S.pz["${id}"].box`) === 0, "problème montré : revient demain");
+ok(ev("pzDueList().length") === 0, "pas dû avant demain");
+ev(`S.pz["${id}"].due = todayStr()`);
+ok(ev("pzDueList().length") === 1, "dû aujourd'hui");
+ev("V.stack=[];V.view='prog';render()");
+ok(!!d.querySelector('[data-act="pzdue"]'), "bouton Réviser mes ratés");
+d.querySelector('[data-act="pzdue"]').click();
+ok(ev("V.view") === "puzzle" && ev("P.id") === id, "ouvre le problème dû");
+// réussite du premier coup : intervalle suivant
+ev("P.errs=0;puzFinish(false)");
+ok(ev(`S.pz["${id}"].box`) === 1 && ev(`S.pz["${id}"].due`) === ev("addDays(todayStr(),3)"), "réussite : prochain rappel dans 3 jours");
+for (let i = 0; i < 4; i++) ev(`V.stack=[];P=null;puzOpen("${id}");P.errs=0;puzFinish(false)`);
+ok(ev(`S.pz["${id}"].due`) === undefined, "après 5 réussites le problème sort du cycle");
+ok(errors.length === 0, "aucune erreur JS " + errors.slice(0, 2).join("|"));
+console.log(fails ? fails + " échec(s)" : "TOUT PASSE"); process.exit(fails ? 1 : 0);

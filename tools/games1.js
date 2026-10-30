@@ -24,3 +24,8 @@ Object.assign(module.exports,{
 lb:"f4 d5 e3 Nf6 b3 e6 Bb2 Be7 Bd3 b6 Nc3 Bb7 Nf3 Nbd7 O-O O-O Ne2 c5 Ng3 Qc7 Ne5 Nxe5 Bxe5 Qc6 Qe2 a6 Nh5 Nxh5 Bxh7+ Kxh7 Qxh5+ Kg8 Bxg7 Kxg7 Qg4+ Kh7 Rf3 e5 Rh3+ Qh6 Rxh6+ Kxh6 Qd7 Bf6 Qxb7 Kg7 Rf1 Rab8 Qd7 Rfd8 Qg4+ Kf8 fxe5 Bg7 e6 Rb7 Qg6 f6 Rxf6+ Bxf6 Qxf6+ Ke8 Qh8+ Ke7 Qg7+ Kxe6 Qxb7 Rd6 Qxa6 d4 exd4 cxd4 h4 d3 Qxd3",
 ku:"e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 O-O Be7 Re1 b5 Bb3 d6 c3 O-O h3 Na5 Bc2 c5 d4 Qc7 Nbd2 Nc6 d5 Nd8 a4 Rb8 axb5 axb5 b4 Nb7 Nf1 Bd7 Be3 Ra8 Qd2 Rfc8 Bd3 g6 Ng3 Bf8 Ra2 c4 Bb1 Qd8 Ba7 Ne8 Bc2 Nc7 Rea1 Qe7 Bb1 Be8 Ne2 Nd8 Nh2 Bg7 f4 f6 f5 g5 Bc2 Bf7 Ng3 Nb7 Bd1 h6 Bh5 Qe8 Qd1 Nd8 Ra3 Kf8 R1a2 Kg8 Ng4 Kf8 Ne3 Kg8 Bxf7+ Nxf7 Qh5 Nd8 Qg6 Kf8 Nh5"
 });
+module.exports.ft=require("fs").readFileSync(__dirname+"/ft.txt","utf8");
+module.exports.nz=require("fs").readFileSync(__dirname+"/nz.txt","utf8").trim();
+module.exports.lp=require("fs").readFileSync(__dirname+"/lp.txt","utf8").trim();
+module.exports.sp=require("fs").readFileSync(__dirname+"/sp.txt","utf8").trim();
+module.exports.cm=require("fs").readFileSync(__dirname+"/cm.txt","utf8").trim();

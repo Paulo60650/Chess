@@ -23,7 +23,9 @@ function openingStats() {
 }
 function statsCardHTML() {
   const st = themeStats(), rows = Object.keys(st).map((k) => st[k]).filter((t) => t.n).sort((a, b) => a.rate - b.rate);
-  let h = '<section class="card"><span class="label">Réussite par thème (premier essai)</span>';
+  const due = pzDueList();
+  let h = due.length ? '<section class="card"><span class="label">À revoir aujourd\'hui</span><p class="muted">' + due.length + " problème" + (due.length > 1 ? "s" : "") + " raté" + (due.length > 1 ? "s" : "") + " reviennent à intervalles croissants (1, 3, 7, 16 puis 35 jours) tant que tu ne les réussis pas du premier coup.</p><div class=\"row\"><button class=\"btn primary\" data-act=\"pzdue\">Réviser mes ratés</button></div></section>" : "";
+  h += '<section class="card"><span class="label">Réussite par thème (premier essai)</span>';
   const noData = !rows.some((t) => t.rated);
   if (noData) h += '<p class="muted">Résous quelques problèmes : cette carte te montrera les thèmes où tu perds le plus de points.</p>';
   else {
@@ -71,6 +73,7 @@ function pzAdaptive(theme, exclude) {
     const r = pzRating(p), done = pzDone(p.id), r0 = S.pz[p.id];
     let x = Math.exp(-Math.abs(r - (e.p + 40)) / 220) * (0.6 + 1.4 * themeWeak(p.th, st));
     x *= done ? 0.5 : 1.3;
+    if (r0 && r0.due && r0.due <= todayStr()) x *= 8;
     if (r0 && r0.last === todayStr()) x *= 0.3;
     return x + 0.001;
   });
